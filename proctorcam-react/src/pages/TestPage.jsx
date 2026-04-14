@@ -6,6 +6,7 @@ import './TestPage.css'
 /* ═══════════════════════════════════════════════════════════════════════════ */
 export default function TestPage() {
   const navigate = useNavigate()
+  const warningCount = useRef(0);
 
   /* ── state ─────────────────────────────────────────────────────────────── */
   const [currentQuestion, setCurrentQuestion] = useState(3)
@@ -104,11 +105,26 @@ export default function TestPage() {
 
   /* ── toast ─────────────────────────────────────────────────────────────── */
   const toastTimeout = useRef(null)
-  const showToast = (msg) => {
-    setToast(msg)
-    if (toastTimeout.current) clearTimeout(toastTimeout.current)
-    toastTimeout.current = setTimeout(() => setToast(null), 2200)
-  }
+  const showToast = (msg, isWarning = false) => {
+    setToast(msg);
+
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    toastTimeout.current = setTimeout(() => setToast(null), 2200);
+
+    // only count REAL warnings
+    if (isWarning) {
+      warningCount.current += 1;
+
+      console.log("Warning:", warningCount.current);
+
+      if (warningCount.current >= 3) {
+        showToast("🚨 Too many violations. Auto-submitting test.");
+        setTimeout(() => {
+          autoSubmitTest();
+        }, 500);
+      }
+    }
+  };
 
   /* ── modal ─────────────────────────────────────────────────────────────── */
   const showWarningHistory = () => {

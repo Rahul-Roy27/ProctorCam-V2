@@ -1,3 +1,5 @@
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
+import "@tensorflow/tfjs";
 export function startProctoring(video, canvas, showToast, setStatus) {
 
     let noFaceStart = null;
@@ -9,8 +11,16 @@ export function startProctoring(video, canvas, showToast, setStatus) {
 
     let noFaceSent = false;
     let multiFaceSent = false;
+    let model = null;
+    let lastRun = 0;
 
     const THRESHOLD_TIME = 2000;
+
+    async function loadModel() {
+        model = await cocoSsd.load();
+    }
+
+    loadModel();
 
     async function startCamera() {
         stream = await navigator.mediaDevices.getUserMedia({
@@ -35,9 +45,23 @@ export function startProctoring(video, canvas, showToast, setStatus) {
         minDetectionConfidence: 0.5
     });
 
-    faceDetection.onResults((results) => {
+    faceDetection.onResults(async (results) => {
         const faces = results.detections || [];
         const now = Date.now();
+
+        // run every 500ms
+        if (model && video.readyState === 4 && now - lastRun > 500) {
+            lastRun = now;
+
+            const predictions = await model.detect(video);
+
+            predictions.forEach(p => {
+                if (p.class === "cell phone" && p.score > 0.6) {
+                    showToast("📱 Phone detected!",true);
+                    sendEvent("phone_detected");
+                }
+            });
+        }
 
         let faceWidth = 0;
 
@@ -78,7 +102,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
             const change = Math.abs(faceWidth - lastFaceWidth);
 
             if (change > 0.08) {
-                showToast("⚠️ Sudden face change");
+                showToast("⚠️ Sudden face change",true);
                 sendEvent("suspicious_movement");
             }
         }
@@ -99,13 +123,13 @@ export function startProctoring(video, canvas, showToast, setStatus) {
 
                 // 🎯 movement detection
                 if (dx > 0.05 || dy > 0.05) {
-                    showToast("⚠️ Head moved suspiciously");
+                    showToast("⚠️ Head moved suspiciously",true);
                     sendEvent("head_movement");
                 }
 
                 // 🎯 distance change
                 if (dw > 0.08) {
-                    showToast("⚠️ Moving too close/far");
+                    showToast("⚠️ Moving too close/far",true);
                     sendEvent("distance_change");
                 }
             }
@@ -114,7 +138,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
         }
 
         if (faceWidth > 0.35) {
-            showToast("⚠️ Face too close");
+            showToast("⚠️ Face too close",true);
             sendEvent("face_too_close");
         }
 
@@ -135,7 +159,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
 
             if (now - noFaceStart > THRESHOLD_TIME && !noFaceSent) {
                 sendEvent("no_face");
-                showToast("No face detected!");
+                showToast("No face detected!",true);
                 noFaceSent = true;
             }
         } else {
@@ -149,7 +173,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
 
             if (now - multipleFaceStart > THRESHOLD_TIME && !multiFaceSent) {
                 sendEvent("multiple_faces");
-                showToast("Multiple faces detected!");
+                showToast("Multiple faces detected!",true);
                 multiFaceSent = true;
             }
         } else {
