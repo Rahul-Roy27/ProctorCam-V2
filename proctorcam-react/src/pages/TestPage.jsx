@@ -31,10 +31,43 @@ export default function TestPage() {
       }
     };
 
+
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    let hiddenStart = null;
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        hiddenStart = Date.now();
+        showToast("⚠️ Tab switch detected!", true);
+      } else {
+        const duration = Date.now() - hiddenStart;
+
+        if (hiddenStart && duration > 1000) {
+          showToast("⚠️ You returned after leaving the tab", true);
+        }
+
+        hiddenStart = null;
+      }
+    };
+
+    const handleBlur = () => {
+      showToast("⚠️ Window lost focus (Alt+Tab detected)", true);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 
