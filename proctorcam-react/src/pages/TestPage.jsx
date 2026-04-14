@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { startProctoring } from "../ai/proctoring";
 import './TestPage.css'
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 export default function TestPage() {
   const navigate = useNavigate()
+  const warningCount = useRef(0);
 
   /* ── state ─────────────────────────────────────────────────────────────── */
   const [currentQuestion, setCurrentQuestion] = useState(3)
@@ -14,7 +16,72 @@ export default function TestPage() {
   const [totalSeconds, setTotalSeconds] = useState(42 * 60 + 15)
   const [toast, setToast] = useState(null)
   const [modal, setModal] = useState(null)
+  const videoRef = useRef(null);
+  const [status, setStatus] = useState("Starting...");
+  const canvasRef = useRef(null);
   const totalQuestions = 10
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFullscreen = !!document.fullscreenElement;
+
+      if (!isFullscreen) {
+        showToast("⚠️ You exited fullscreen. Auto-submitting test.");
+        autoSubmitTest();
+      }
+    };
+
+
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    let hiddenStart = null;
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        hiddenStart = Date.now();
+        showToast("⚠️ Tab switch detected!", true);
+      } else {
+        const duration = Date.now() - hiddenStart;
+
+        if (hiddenStart && duration > 1000) {
+          showToast("⚠️ You returned after leaving the tab", true);
+        }
+
+        hiddenStart = null;
+      }
+    };
+
+    const handleBlur = () => {
+      showToast("⚠️ Window lost focus (Alt+Tab detected)", true);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cleanup; // ✅ MUST exist here
+
+    if (videoRef.current) {
+      cleanup = startProctoring(videoRef.current, canvasRef.current, showToast, setStatus);
+    }
+
+    return () => {
+      if (cleanup) cleanup(); // ✅ now valid
+    };
+  }, []);
 
   /* ── timer ─────────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -23,6 +90,10 @@ export default function TestPage() {
     }, 1000)
     return () => clearInterval(id)
   }, [])
+
+  const autoSubmitTest = () => {
+    navigate("/results");
+  };
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60)
@@ -67,11 +138,26 @@ export default function TestPage() {
 
   /* ── toast ─────────────────────────────────────────────────────────────── */
   const toastTimeout = useRef(null)
-  const showToast = (msg) => {
-    setToast(msg)
-    if (toastTimeout.current) clearTimeout(toastTimeout.current)
-    toastTimeout.current = setTimeout(() => setToast(null), 2200)
-  }
+  const showToast = (msg, isWarning = false) => {
+    setToast(msg);
+
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    toastTimeout.current = setTimeout(() => setToast(null), 3000);
+    console.log(warningCount.current)
+    // only count REAL warnings
+    if (isWarning) {
+      warningCount.current += 1;
+
+      console.log("Warning:", warningCount.current);
+
+      if (warningCount.current >= 3) {
+        showToast("🚨 Too many violations. Auto-submitting test.");
+        setTimeout(() => {
+          autoSubmitTest();
+        }, 500);
+      }
+    }
+  };
 
   /* ── modal ─────────────────────────────────────────────────────────────── */
   const showWarningHistory = () => {
@@ -138,8 +224,8 @@ export default function TestPage() {
               <div className="diagram-box">
                 <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" className="physics-svg">
                   <line x1="40" y1="115" x2="260" y2="115" stroke="#5bb8e0" strokeWidth="3" />
-                  {[40,60,80,100,120,140,160,180,200,220,240].map(x => (
-                    <line key={x} x1={x} y1="118" x2={x+15} y2="133" stroke="#5bb8e0" strokeWidth="1.5" />
+                  {[40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240].map(x => (
+                    <line key={x} x1={x} y1="118" x2={x + 15} y2="133" stroke="#5bb8e0" strokeWidth="1.5" />
                   ))}
                   <rect x="118" y="77" width="64" height="38" rx="3" fill="#e08a30" />
                   <defs>
@@ -231,19 +317,22 @@ export default function TestPage() {
           </div>
 
           {/* Live Feed */}
-          <div className="livefeed-card">
-            <div className="livefeed-header">
-              <span className="live-dot"></span>
-              <span className="live-text">LIVE FEED</span>
-            </div>
-            <div className="livefeed-image">
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&crop=face"
-                alt="Live feed"
-                onError={(e) => { e.target.src = 'https://i.pravatar.cc/400?img=15' }}
-              />
-              <div className="confidence-badge"></div>
-            </div>
+          <div className="livefeed-image">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="live-video"
+            />
+
+            {/* NEW: overlay canvas */}
+            <canvas
+              ref={canvasRef}
+              className="face-overlay"
+            />
+
+            <div className="confidence-badge">{status}</div>
           </div>
 
           {/* Question Palette */}
