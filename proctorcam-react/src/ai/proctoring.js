@@ -8,6 +8,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
     let stream = null;
     let camera = null;
     let lastFace = null;
+    let isRunning = true;
 
     let noFaceSent = false;
     let multiFaceSent = false;
@@ -46,6 +47,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
     });
 
     faceDetection.onResults(async (results) => {
+        if (!isRunning) return;
         const faces = results.detections || [];
         const now = Date.now();
 
@@ -210,6 +212,7 @@ export function startProctoring(video, canvas, showToast, setStatus) {
     }
 
     return () => {
+        isRunning = false;
         if (camera) {
             camera.stop();
         }
