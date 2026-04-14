@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProctorAI – Test</title>
+  <link rel="stylesheet" href="Test.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <!-- <nav class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <span class="logo-proctor">Proctor</span><span class="logo-ai">AI</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#" class="active">Test</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn" title="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="icon-btn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <div class="avatar">
+        <img src="https://i.pravatar.cc/32?img=12" alt="User"/>
+      </div>
+    </div>
+  </nav> -->
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+      <!-- Question Header -->
+      <div class="question-header">
+        <div class="question-meta">
+          <span class="exam-tag">Assessment - 2</span>
+          <h2 class="subject-title">Physics: Mechanics &amp; Dynamics</h2>
+        </div>
+        <div class="question-badge">Q3 of 10</div>
+      </div>
+
+      <!-- Question Body -->
+      <div class="question-card">
+        <p class="question-text">
+          A block of mass 5kg is placed on a smooth horizontal surface. A horizontal force F = 2t (where t is in seconds) is applied to it. At what time t will the block lose contact with the surface if the surface starts accelerating upwards with 2m/s²?
+        </p>
+
+        <!-- Physics Diagram -->
+        <div class="diagram-wrapper">
+          <div class="diagram-box">
+            <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" class="physics-svg">
+              <!-- Surface/Ground -->
+              <line x1="40" y1="115" x2="260" y2="115" stroke="#5bb8e0" stroke-width="3"/>
+              <!-- Hatching below surface -->
+              <line x1="40" y1="118" x2="55" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="60" y1="118" x2="75" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="80" y1="118" x2="95" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="100" y1="118" x2="115" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="120" y1="118" x2="135" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="140" y1="118" x2="155" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="160" y1="118" x2="175" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="180" y1="118" x2="195" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="200" y1="118" x2="215" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="220" y1="118" x2="235" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <line x1="240" y1="118" x2="255" y2="133" stroke="#5bb8e0" stroke-width="1.5"/>
+              <!-- Block -->
+              <rect x="118" y="77" width="64" height="38" rx="3" fill="#e08a30" />
+              <!-- Force arrow (horizontal) -->
+              <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#e0e0e0"/>
+                </marker>
+                <marker id="arrow-up" markerWidth="8" markerHeight="8" refX="3" refY="6" orient="auto">
+                  <path d="M0,8 L6,8 L3,0 z" fill="#e0e0e0"/>
+                </marker>
+              </defs>
+              <line x1="200" y1="96" x2="240" y2="96" stroke="#e0e0e0" stroke-width="2" marker-end="url(#arrow)"/>
+              <!-- F label -->
+              <text x="248" y="100" fill="#e0e0e0" font-size="13" font-family="DM Sans, sans-serif">F</text>
+              <!-- Up arrow for surface acceleration -->
+              <line x1="60" y1="110" x2="60" y2="75" stroke="#e0e0e0" stroke-width="2" marker-end="url(#arrow-up)"/>
+              <text x="63" y="72" fill="#e0e0e0" font-size="11" font-family="DM Sans, sans-serif">a</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="options-list" id="options">
+          <div class="option-item" data-value="A" onclick="selectOption(this)">
+            <span class="option-label">A</span>
+            <span class="option-text">t = 5.0 seconds</span>
+          </div>
+          <div class="option-item selected" data-value="B" onclick="selectOption(this)">
+            <span class="option-label selected-label">B</span>
+            <span class="option-text">t = 2.5 seconds</span>
+          </div>
+          <div class="option-item" data-value="C" onclick="selectOption(this)">
+            <span class="option-label">C</span>
+            <span class="option-text">t = 3.0 seconds</span>
+          </div>
+          <div class="option-item" data-value="D" onclick="selectOption(this)">
+            <span class="option-label">D</span>
+            <span class="option-text">t = 4.0 seconds</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <div class="bottom-nav">
+        <button class="btn-secondary" onclick="navigate(-1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Previous
+        </button>
+        <button class="btn-warning" onclick="toggleWarningHistory()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Warning History
+        </button>
+        <button class="btn-review" onclick="markForReview()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Mark for Review
+        </button>
+        <button class="btn-primary" onclick="navigate(1)">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- Timer -->
+      <div class="timer-card">
+        <div class="timer-display" id="timer">42:15</div>
+        <div class="timer-label">TIME REMAINING</div>
+        <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
+      </div>
+
+      <!-- Live Feed -->
+      <div class="livefeed-card">
+        <div class="livefeed-header">
+          <span class="live-dot"></span>
+          <span class="live-text">LIVE FEED</span>
+        </div>
+        <div class="livefeed-image">
+          <!-- Using a placeholder face image -->
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&crop=face" alt="Live feed" onerror="this.src='https://i.pravatar.cc/400?img=15'"/>
+          <div class="confidence-badge">Confidence: 99.4%</div>
+        </div>
+      </div>
+
+      <!-- Question Palette -->
+      <div class="palette-card">
+        <div class="palette-title">QUESTION PALETTE</div>
+        <div class="palette-grid" id="palette">
+          <!-- Filled by JS -->
+        </div>
+        <div class="palette-legend">
+          <div class="legend-item">
+            <span class="legend-dot answered"></span>
+            <span>ANSWERED</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot marked"></span>
+            <span>MARKED</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot not-visited"></span>
+            <span>NOT VISITED</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot active"></span>
+            <span>ACTIVE</span>
+          </div>F
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn-submit" onclick="submitTest()">SUBMIT TEST</button>
+    </div>
+  </div>
+
+  <!-- PROCTORING ALERT FOOTER -->
+  <!-- <div class="proctoring-alert" id="proctoringAlert">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e05252" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>PROCTORING ALERT</span>
+  </div> -->
+
+  <script src="Test.js"></script>
+</body>
+</html>
