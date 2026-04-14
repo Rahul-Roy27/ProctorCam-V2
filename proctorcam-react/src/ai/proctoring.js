@@ -1,10 +1,11 @@
-export function startProctoring(video, showToast, setStatus) {
+export function startProctoring(video, canvas, showToast, setStatus) {
 
     let noFaceStart = null;
     let multipleFaceStart = null;
     let lastFaceWidth = null;
     let stream = null;
     let camera = null;
+    let lastFace = null;
 
     let noFaceSent = false;
     let multiFaceSent = false;
@@ -40,8 +41,36 @@ export function startProctoring(video, showToast, setStatus) {
 
         let faceWidth = 0;
 
+        const ctx = canvas.getContext("2d");
+
+        // match canvas size to video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // clear previous frame
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         if (faces.length > 0) {
-            faceWidth = faces[0].boundingBox.width;
+            const box = faces[0].boundingBox;
+
+            // 1. draw face box
+            const x = box.xCenter - box.width / 2;
+            const y = box.yCenter - box.height / 2;
+
+            ctx.strokeStyle = "#00ff00";
+            ctx.lineWidth = 3;
+
+            ctx.strokeRect(
+                x * canvas.width,
+                y * canvas.height,
+                box.width * canvas.width,
+                box.height * canvas.height
+            );
+
+            // 2. reuse same detection data
+            faceWidth = box.width;
+        } else {
+            faceWidth = 0;
         }
 
         // 🔥 movement detection
@@ -52,6 +81,36 @@ export function startProctoring(video, showToast, setStatus) {
                 showToast("⚠️ Sudden face change");
                 sendEvent("suspicious_movement");
             }
+        }
+
+        if (faces.length > 0) {
+            const box = faces[0].boundingBox;
+
+            const currentFace = {
+                x: box.xCenter,
+                y: box.yCenter,
+                width: box.width
+            };
+
+            if (lastFace) {
+                const dx = Math.abs(currentFace.x - lastFace.x);
+                const dy = Math.abs(currentFace.y - lastFace.y);
+                const dw = Math.abs(currentFace.width - lastFace.width);
+
+                // 🎯 movement detection
+                if (dx > 0.05 || dy > 0.05) {
+                    showToast("⚠️ Head moved suspiciously");
+                    sendEvent("head_movement");
+                }
+
+                // 🎯 distance change
+                if (dw > 0.08) {
+                    showToast("⚠️ Moving too close/far");
+                    sendEvent("distance_change");
+                }
+            }
+
+            lastFace = currentFace;
         }
 
         if (faceWidth > 0.35) {

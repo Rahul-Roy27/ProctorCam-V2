@@ -17,14 +17,31 @@ export default function TestPage() {
   const [modal, setModal] = useState(null)
   const videoRef = useRef(null);
   const [status, setStatus] = useState("Starting...");
+  const canvasRef = useRef(null);
   const totalQuestions = 10
 
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFullscreen = !!document.fullscreenElement;
+
+      if (!isFullscreen) {
+        showToast("⚠️ You exited fullscreen. Auto-submitting test.");
+        autoSubmitTest();
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     let cleanup; // ✅ MUST exist here
 
     if (videoRef.current) {
-      cleanup = startProctoring(videoRef.current, showToast, setStatus);
+      cleanup = startProctoring(videoRef.current, canvasRef.current, showToast, setStatus);
     }
 
     return () => {
@@ -39,6 +56,10 @@ export default function TestPage() {
     }, 1000)
     return () => clearInterval(id)
   }, [])
+
+  const autoSubmitTest = () => {
+    navigate("/results");
+  };
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60)
@@ -255,6 +276,13 @@ export default function TestPage() {
               playsInline
               className="live-video"
             />
+
+            {/* NEW: overlay canvas */}
+            <canvas
+              ref={canvasRef}
+              className="face-overlay"
+            />
+
             <div className="confidence-badge">{status}</div>
           </div>
 
