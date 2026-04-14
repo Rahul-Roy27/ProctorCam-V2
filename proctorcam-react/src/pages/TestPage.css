@@ -575,10 +575,10 @@
   /* background: #1a1d2e; */
   background: red;
   color: white;
-  padding: 10px 20px;
+  padding: 20px 25px;
   border-radius: 8px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   z-index: 9999;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);

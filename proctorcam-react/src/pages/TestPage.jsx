@@ -142,8 +142,8 @@ export default function TestPage() {
     setToast(msg);
 
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    toastTimeout.current = setTimeout(() => setToast(null), 2200);
-
+    toastTimeout.current = setTimeout(() => setToast(null), 3000);
+    console.log(warningCount.current)
     // only count REAL warnings
     if (isWarning) {
       warningCount.current += 1;
