@@ -352,6 +352,7 @@
   width: 100%;
   height: 200px;
   background: #1a1a2e;
+  border-radius: 10px;
 }
 
 .test-page .livefeed-image img {
@@ -361,6 +362,15 @@
   object-position: center top;
   display: block;
   filter: brightness(0.85);
+}
+
+.test-page .livefeed-image video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.85);
+  border-radius: 10px;
 }
 
 .test-page .confidence-badge {

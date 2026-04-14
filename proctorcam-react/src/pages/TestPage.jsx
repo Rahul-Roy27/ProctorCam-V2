@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { startProctoring } from "../ai/proctoring";
 import './TestPage.css'
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -14,7 +15,22 @@ export default function TestPage() {
   const [totalSeconds, setTotalSeconds] = useState(42 * 60 + 15)
   const [toast, setToast] = useState(null)
   const [modal, setModal] = useState(null)
+  const videoRef = useRef(null);
+  const [status, setStatus] = useState("Starting...");
   const totalQuestions = 10
+
+
+  useEffect(() => {
+    let cleanup; // ✅ MUST exist here
+
+    if (videoRef.current) {
+      cleanup = startProctoring(videoRef.current, showToast, setStatus);
+    }
+
+    return () => {
+      if (cleanup) cleanup(); // ✅ now valid
+    };
+  }, []);
 
   /* ── timer ─────────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -138,8 +154,8 @@ export default function TestPage() {
               <div className="diagram-box">
                 <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" className="physics-svg">
                   <line x1="40" y1="115" x2="260" y2="115" stroke="#5bb8e0" strokeWidth="3" />
-                  {[40,60,80,100,120,140,160,180,200,220,240].map(x => (
-                    <line key={x} x1={x} y1="118" x2={x+15} y2="133" stroke="#5bb8e0" strokeWidth="1.5" />
+                  {[40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240].map(x => (
+                    <line key={x} x1={x} y1="118" x2={x + 15} y2="133" stroke="#5bb8e0" strokeWidth="1.5" />
                   ))}
                   <rect x="118" y="77" width="64" height="38" rx="3" fill="#e08a30" />
                   <defs>
@@ -231,19 +247,15 @@ export default function TestPage() {
           </div>
 
           {/* Live Feed */}
-          <div className="livefeed-card">
-            <div className="livefeed-header">
-              <span className="live-dot"></span>
-              <span className="live-text">LIVE FEED</span>
-            </div>
-            <div className="livefeed-image">
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop&crop=face"
-                alt="Live feed"
-                onError={(e) => { e.target.src = 'https://i.pravatar.cc/400?img=15' }}
-              />
-              <div className="confidence-badge"></div>
-            </div>
+          <div className="livefeed-image">
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="live-video"
+            />
+            <div className="confidence-badge">{status}</div>
           </div>
 
           {/* Question Palette */}
