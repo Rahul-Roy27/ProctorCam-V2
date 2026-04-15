@@ -22,6 +22,11 @@ export default function TestPage() {
   const totalQuestions = 10
 
   useEffect(() => {
+    localStorage.removeItem("proctoring_logs");
+    warningCount.current = 0;
+  }, []);
+
+  useEffect(() => {
     const handleFullscreenChange = () => {
       const isFullscreen = !!document.fullscreenElement;
 
@@ -136,10 +141,40 @@ export default function TestPage() {
     })
   }, [currentQuestion])
 
+  const captureSnapshot = () => {
+    if (!videoRef.current) return null;
+
+    const canvas = document.createElement("canvas");
+    const video = videoRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    return canvas.toDataURL("image/jpeg", 0.7);
+  };
+
   /* ── toast ─────────────────────────────────────────────────────────────── */
   const toastTimeout = useRef(null)
   const showToast = (msg, isWarning = false) => {
     setToast(msg);
+
+    if (isWarning) {
+      const logs = JSON.parse(localStorage.getItem("proctoring_logs") || "[]");
+
+      const warning = {
+        id: logs.length + 1,
+        type: "warning",
+        message: msg,
+        timestamp: Date.now(),
+        snapshot: captureSnapshot()
+      };
+      logs.push(warning);
+
+      localStorage.setItem("proctoring_logs", JSON.stringify(logs));
+    }
 
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
     toastTimeout.current = setTimeout(() => setToast(null), 3000);
@@ -161,12 +196,31 @@ export default function TestPage() {
 
   /* ── modal ─────────────────────────────────────────────────────────────── */
   const showWarningHistory = () => {
+    const logs = JSON.parse(localStorage.getItem("proctoring_logs") || "[]");
+
+    if (logs.length === 0) {
+      setModal({
+        title: 'Warning History',
+        message: 'No warnings recorded in this session.',
+        showConfirm: false
+      });
+      return;
+    }
+
+    const formatted = logs
+      .map((log, i) => {
+        const time = new Date(log.timestamp).toLocaleTimeString();
+
+        return `${i + 1}. ${log.message} (${time})`;
+      })
+      .join("\n");
+
     setModal({
       title: 'Warning History',
-      message: 'No warnings have been recorded for this session. Your proctoring session is currently active and monitoring behavior in real time.',
+      message: formatted,
       showConfirm: false
-    })
-  }
+    });
+  };
 
   const submitTest = () => {
     const answered = questionStates.filter(s => s === 1).length
@@ -372,7 +426,7 @@ export default function TestPage() {
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setModal(null) }}>
           <div className="modal">
             <h3>{modal.title}</h3>
-            <p>{modal.message}</p>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{modal.message}</pre>
             <div className="modal-actions">
               <button className="modal-cancel" onClick={() => setModal(null)}>Close</button>
               {modal.showConfirm && (
