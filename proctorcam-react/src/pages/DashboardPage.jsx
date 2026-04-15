@@ -35,7 +35,7 @@ export default function DashboardPage() {
             <span style={{fontSize:'13px'}}>Logout</span>
           </Link>
           <div className="avatar">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="User"/>
+            <img src="https://images.unsplash.com/photo-1775218888901-088696a4ee0b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="User"/>
           </div>
         </div>
       </nav>
@@ -47,7 +47,7 @@ export default function DashboardPage() {
         <section className="profile-card">
           <div className="profile-info-section">
             <div className="profile-image-wrapper">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" alt="Alex Rivera" className="profile-image" />
+              <img src="https://images.unsplash.com/photo-1775218888901-088696a4ee0b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Alex Rivera" className="profile-image" />
               <div className="live-camera-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
               </div>
@@ -55,8 +55,8 @@ export default function DashboardPage() {
             
             <div className="profile-details">
               <div className="profile-name-row">
-                <h1 className="student-name">Alex Rivera</h1>
-                <span className="semester-badge">SEMESTER 4</span>
+                <h1 className="student-name">Rahul</h1>
+                <span className="semester-badge">SEMESTER 2</span>
               </div>
               <div className="student-meta">
                 <div className="meta-item">
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 COMING UP NEXT
               </span>
-              <h2 className="coming-up-title">JEE Mock Test — Chapter 3</h2>
+              <h2 className="coming-up-title">Physics Lab Assessment - 3</h2>
               
               <div className="coming-up-meta-grid">
                 <div className="meta-box">
