@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { startProctoring } from "../ai/proctoring";
+import { startProctoring } from "../pages/proctoring";
 import './TestPage.css'
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -158,35 +158,40 @@ export default function TestPage() {
 
   /* ── toast ─────────────────────────────────────────────────────────────── */
   const toastTimeout = useRef(null)
+  const hasSubmitted = useRef(false);
+
   const showToast = (msg, isWarning = false) => {
     setToast(msg);
 
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    toastTimeout.current = setTimeout(() => setToast(null), 3000);
+
     if (isWarning) {
+      // 1. load logs
       const logs = JSON.parse(localStorage.getItem("proctoring_logs") || "[]");
 
+      // 2. add warning entry
       const warning = {
         id: logs.length + 1,
         type: "warning",
         message: msg,
-        timestamp: Date.now(),
-        snapshot: captureSnapshot()
+        timestamp: Date.now()
       };
+
       logs.push(warning);
-
       localStorage.setItem("proctoring_logs", JSON.stringify(logs));
-    }
 
-    if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    toastTimeout.current = setTimeout(() => setToast(null), 3000);
-    console.log(warningCount.current)
-    // only count REAL warnings
-    if (isWarning) {
+      // 3. deduct 10 minutes
+      setTotalSeconds(prev => Math.max(0, prev - 600));
+
+      // 4. increment counter
       warningCount.current += 1;
 
       console.log("Warning:", warningCount.current);
 
-      if (warningCount.current >= 3) {
-        showToast("🚨 Too many violations. Auto-submitting test.");
+      // 5. auto submit after 3 warnings
+      if (warningCount.current >= 3 && !hasSubmitted.current) {
+        hasSubmitted.current = true;
         setTimeout(() => {
           autoSubmitTest();
         }, 500);
