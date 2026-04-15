@@ -19,6 +19,8 @@ export default function TestPage() {
   const videoRef = useRef(null);
   const [status, setStatus] = useState("Starting...");
   const canvasRef = useRef(null);
+  const lastWarningTime = useRef(0);
+  const COOLDOWN = 3000; // 10 seconds
   const totalQuestions = 10
 
   useEffect(() => {
@@ -44,6 +46,15 @@ export default function TestPage() {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, []);
+
+  const hasAutoSubmitted = useRef(false);
+
+  useEffect(() => {
+    if (totalSeconds === 0 && !hasAutoSubmitted.current) {
+      hasAutoSubmitted.current = true;
+      autoSubmitTest();
+    }
+  }, [totalSeconds]);
 
   useEffect(() => {
     let hiddenStart = null;
@@ -98,6 +109,24 @@ export default function TestPage() {
 
   const autoSubmitTest = () => {
     navigate("/results");
+  };
+
+  const submitTestToServer = async () => {
+    const logs = JSON.parse(localStorage.getItem("proctoring_logs") || "[]");
+
+    try {
+      await fetch("http://localhost:5000/api/proctoring/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ logs })
+      });
+
+      console.log("Logs uploaded to MongoDB");
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
   };
 
   const formatTime = (secs) => {
@@ -167,6 +196,15 @@ export default function TestPage() {
     toastTimeout.current = setTimeout(() => setToast(null), 3000);
 
     if (isWarning) {
+      const now = Date.now();
+
+      // 🔥 COOLDOWN CHECK
+      if (now - lastWarningTime.current < COOLDOWN) {
+        console.log("Warning ignored due to cooldown");
+        return;
+      }
+
+      lastWarningTime.current = now;
       // 1. load logs
       const logs = JSON.parse(localStorage.getItem("proctoring_logs") || "[]");
 
@@ -190,12 +228,12 @@ export default function TestPage() {
       console.log("Warning:", warningCount.current);
 
       // 5. auto submit after 3 warnings
-      if (warningCount.current >= 3 && !hasSubmitted.current) {
-        hasSubmitted.current = true;
-        setTimeout(() => {
-          autoSubmitTest();
-        }, 500);
-      }
+      // if (warningCount.current >= 3 && !hasSubmitted.current) {
+      //   hasSubmitted.current = true;
+      //   setTimeout(() => {
+      //     autoSubmitTest();
+      //   }, 500);
+      // }
     }
   };
 
@@ -237,10 +275,13 @@ export default function TestPage() {
     })
   }
 
-  const confirmSubmit = () => {
-    setModal(null)
-    navigate('/results')
-  }
+  const confirmSubmit = async () => {
+    setModal(null);
+
+    await submitTestToServer(); // 👈 MongoDB upload happens here
+
+    navigate('/results');
+  };
 
   /* ── palette state helper ──────────────────────────────────────────────── */
   const getPaletteClass = (i) => {
